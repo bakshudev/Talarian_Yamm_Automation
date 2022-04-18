@@ -1,94 +1,60 @@
 package com.yamm.tests;
 
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.Locator.ClickOptions;
 import com.microsoft.playwright.options.*;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import java.util.*;
 
 public class Yamm_Email_Sending_Tests {
 	
-  public static void main(String[] args) {
+  public static void main(String[] args) throws InterruptedException {
+	 
+	  // Setup Chrome browser using Playwright
+	  Playwright playwright = Playwright.create();
+	  Browser browser = playwright.chromium().launch(
+			  											new BrowserType.LaunchOptions()
+			  												.setHeadless(false)
+			  												.setChannel("chrome"));
+	  // Create a new browser context and a new page
+	  BrowserContext context = browser.newContext();;
+	  Page page = context.newPage();
 	  
-    try (Playwright playwright = Playwright.create()) {
-      Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
-        .setHeadless(false));
-      BrowserContext context = browser.newContext();
+	  // Login & open Goolge Sheets Home
+     page.navigate("https://docs.google.com/spreadsheets/");
+     page.locator("#identifierId").fill("bakshu.test@gmail.com");
+     page.locator("button:has-text('Next')").first().click();
+     page.locator("[name=password]").fill("YammTest#1");
+     page.locator("button:has-text('Next')").first().click();
+     
+     // Open required Google Sheet File & Sheet
+     page.waitForNavigation(() -> {
+    	 page.locator("text=Discount Coupon Campaign").click();
+    	 page.locator("span[class=\"docs-sheet-tab-name\"]:has-text(\"Sheet1\")").click();
+     });
+          
+     // Open YAMM dialog
+     page.locator("#docs-extensions-menu").click();
+     page.waitForSelector("text=Yet Another Mail Merge: Mail Merge for Gmail►");
+      // initially, it just displays help. We need this delay so that it loads all options and displays "Start Mail Merge"
+     page.locator("text=Yet Another Mail Merge: Mail Merge for Gmail►").click(new ClickOptions().setDelay(2000));
+     page.locator("text=Start Mail Merge").click();
+ 	 FrameLocator yammFrame = page.frameLocator("[src*=\"macros\"]").frameLocator("#sandboxFrame").frameLocator("#userHtmlFrame");
+     
+ 	 // Perform required actions in YAMM dialog
+ 	 yammFrame.locator("#senderName_input").fill("EMAIL SENDER");
+     yammFrame.locator("#drafts_list").selectOption("r5543221579514015015");
+     yammFrame.locator("#readReceiptCheckbox").uncheck();
+     Thread.sleep(3000);
+     yammFrame.locator("#sendButton").click(); // Just comment sending emails for now
 
-      // Open new page
-      Page page = context.newPage();
+     // Print messages after sending emails and close YAMM
+     Thread.sleep(3000);
+     yammFrame.locator("#mainPanel button:has-text('Close')").focus();
+     System.out.println(yammFrame.locator("#contextualAlert").innerText());
+     System.out.println(yammFrame.locator("#mainPanel div:nth-child(1)").innerText());
+     yammFrame.locator("#mainPanel button:has-text('Close')").click();
+   
 
-      // Go to https://accounts.google.com/ServiceLogin?service=wise&passive=1209600&continue=https://docs.google.com/spreadsheets/&followup=https://docs.google.com/spreadsheets/&ltmpl=sheets
-      page.navigate("https://accounts.google.com/ServiceLogin?service=wise&passive=1209600&continue=https://docs.google.com/spreadsheets/&followup=https://docs.google.com/spreadsheets/&ltmpl=sheets");
-
-      // Go to https://accounts.google.com/signin/v2/identifier?service=wise&passive=1209600&continue=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2F&followup=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2F&ltmpl=sheets&flowName=GlifWebSignIn&flowEntry=ServiceLogin
-      page.navigate("https://accounts.google.com/signin/v2/identifier?service=wise&passive=1209600&continue=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2F&followup=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2F&ltmpl=sheets&flowName=GlifWebSignIn&flowEntry=ServiceLogin");
-
-      // Click [aria-label="Email or phone"]
-      page.locator("[aria-label=\"Email or phone\"]").click();
-
-      // Fill [aria-label="Email or phone"]
-      page.locator("[aria-label=\"Email or phone\"]").fill("bakshu.test@gmail.com");
-
-      // Click button:has-text("Next")
-      // page.waitForNavigation(new Page.WaitForNavigationOptions().setUrl("https://accounts.google.com/signin/v2/challenge/pwd?service=wise&passive=1209600&continue=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2F&followup=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2F&ltmpl=sheets&flowName=GlifWebSignIn&flowEntry=ServiceLogin&cid=1&navigationDirection=forward&TL=AM3QAYYEgYw-MVP1Yt7oXUBty9Jq1o9MpfPpb5opFykx32tfKsP3PWxUjYiox9Ce"), () ->
-      page.waitForNavigation(() -> {
-        page.locator("button:has-text(\"Next\")").click();
-      });
-
-      // Click [aria-label="Enter your password"]
-      page.locator("[aria-label=\"Enter your password\"]").click();
-
-      // Fill [aria-label="Enter your password"]
-      page.locator("[aria-label=\"Enter your password\"]").fill("YammTest#1");
-
-      // Click button:has-text("Next")
-      // page.waitForNavigation(new Page.WaitForNavigationOptions().setUrl("https://docs.google.com/spreadsheets/u/0/"), () ->
-      page.waitForNavigation(() -> {
-        page.locator("button:has-text(\"Next\")").click();
-      });
-
-      // Click text=Discount Coupon Campaign
-      // page.waitForNavigation(new Page.WaitForNavigationOptions().setUrl("https://docs.google.com/spreadsheets/d/1Rx921mthomVCMzsTMNUldHTOuQDC_4L0_1bBfaVCzm0/edit#gid=0"), () ->
-      page.waitForNavigation(() -> {
-        page.locator("text=Discount Coupon Campaign").click();
-      });
-      // assertThat(page).hasURL("https://docs.google.com/spreadsheets/d/1Rx921mthomVCMzsTMNUldHTOuQDC_4L0_1bBfaVCzm0/edit?ouid=105947502186538054955&usp=sheets_home&ths=true");
-
-      // Click text=Extensions
-      page.locator("text=Extensions").click();
-
-      // Click div[role="menuitem"]:has-text("Yet Another Mail Merge: Mail Merge for Gmail►")
-      page.locator("div[role=\"menuitem\"]:has-text(\"Yet Another Mail Merge: Mail Merge for Gmail►\")").click();
-
-      // Click text=Start Mail Merge
-      page.locator("text=Start Mail Merge").click();
-
-      // Click [placeholder="Your name"]
-      page.frame("userHtmlFrame").locator("[placeholder=\"Your name\"]").click();
-
-      // Click [placeholder="Your name"]
-      page.frame("userHtmlFrame").locator("[placeholder=\"Your name\"]").click();
-
-      // Double click [placeholder="Your name"]
-      page.frame("userHtmlFrame").locator("[placeholder=\"Your name\"]").dblclick();
-
-      // Fill [placeholder="Your name"]
-      page.frame("userHtmlFrame").locator("[placeholder=\"Your name\"]").fill("Bakshu");
-
-      // Check #readReceiptCheckbox
-      page.frame("userHtmlFrame").locator("#readReceiptCheckbox").check();
-
-      // Uncheck #readReceiptCheckbox
-      page.frame("userHtmlFrame").locator("#readReceiptCheckbox").uncheck();
-
-      // Click text=Send 3 emails
-      page.frame("userHtmlFrame").locator("text=Send 3 emails").click();
-
-      // Click text=All emails have been sent!
-      page.frame("userHtmlFrame").locator("text=All emails have been sent!").click();
-
-      // Click text=Close
-      page.frame("userHtmlFrame").locator("text=Close").click();
-    }
   }
 }
