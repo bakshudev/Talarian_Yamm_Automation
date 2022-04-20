@@ -1,4 +1,4 @@
-package com.yamm.tests;
+package com.yamm.web.tests;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.Locator.ClickOptions;

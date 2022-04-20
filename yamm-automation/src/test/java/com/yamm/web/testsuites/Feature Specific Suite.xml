@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="Regresion Suite">
+	<test name=" Module 1">
+		<classes>
+			<class name="com.yamm.web.tests.Yamm_Email_Sending_Tests" />
+		</classes>
+	</test>
+	<test name="Module 2">
+		<classes>
+			<class name="com.yamm.web.tests.Yamm_Email_Sending_Tests" />
+		</classes>
+	</test>
+	<test name="Module 3">
+		<classes>
+			<class name="com.yamm.web.tests.Yamm_Email_Sending_Tests" />
+		</classes>
+	</test>
+</suite>

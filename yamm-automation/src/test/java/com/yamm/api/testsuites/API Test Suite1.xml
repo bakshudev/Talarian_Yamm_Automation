@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="API Test Suite1">
+	<test name=" Module 1">
+		<classes>
+			<class name="com.yamm.api.tests.Yamm_API_Test" />
+		</classes>
+	</test>
+	<test name="Module 2">
+		<classes>
+			<class name="com.yamm.api.tests.Yamm_API_Test" />
+		</classes>
+	</test>
+	<test name="Module 3">
+		<classes>
+			<class name="com.yamm.api.tests.Yamm_API_Test" />
+		</classes>
+	</test>
+</suite>
