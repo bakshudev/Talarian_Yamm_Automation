@@ -13,22 +13,12 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
-public class Yamm_Gmail_Receiving_Tests {
+public class Yamm_Gmail_Receiving_Tests extends TestBase {
 
-	// Define required shared objects and testConfig as static 
-	// so that they can be initialized only once in beforeSuite()
-	// and they can be shared/used across all test classes/cases
-	static Playwright playwright;
-	static Browser browser;
-
-	// Define per test case objects as non static 
-	// so that they get a new instance for each test method
-	BrowserContext context;
-	Page page;
-	
 	  @Test
 	  void test_Yamm_Gmail_Receiving_Single_Receipient_Email_Header(){
-	
+		  
+		  openGmailInbox();
 		  searchGmailInbox("in:inbox from:(bakshu.test@gmail.com) bakshu.test+single-sam@gmail.com");
 		  page.locator("span.bog span:has-text('Your Discount Coupon')").first().click();
 			
@@ -40,6 +30,7 @@ public class Yamm_Gmail_Receiving_Tests {
 	  @Test
 	  void test_Yamm_Gmail_Receiving_Multiple_Receipients_Email_Count(){
 	
+		  openGmailInbox();
 		  searchGmailInbox("in:inbox from:(bakshu.test@gmail.com) bakshu.test+multiple-");
 		
 		  // I always get double the number of emails using this. Needs further investigation. 
@@ -53,6 +44,7 @@ public class Yamm_Gmail_Receiving_Tests {
 	  @Test
 	  void test_Yamm_Gmail_Receiving_Single_Receipient_Email_Count(){
 	
+		  openGmailInbox();
 		  searchGmailInbox("in:inbox from:(bakshu.test@gmail.com) bakshu.test+single-sam@gmail.com");
 			
 		  int totalCount = page.locator("td[class=\"xY a4W\"] div.y6 span.bog span:has-text('Your Discount Coupon')").count();
@@ -63,39 +55,7 @@ public class Yamm_Gmail_Receiving_Tests {
 		
 
 
-	  @BeforeSuite
-		static void launchBrowser() {
-	
-			// Setup Chrome browser using Playwright
-			playwright = Playwright.create();
-			browser = playwright.chromium().launch(
-													new BrowserType.LaunchOptions()
-														.setHeadless(false)
-														.setChannel("chrome"));
-		}
-
-	@AfterSuite
-	static void closeBrowser() {
-		playwright.close();
-	}
-
-	@BeforeMethod
-	void createContextAndPage() {
-
-		// Create a new browser context and a new page
-		context = browser.newContext();
-		page = context.newPage();
-		openGmailInbox();
-
-	}
-
-	@AfterMethod
-	void closeContext() throws InterruptedException {
-		Thread.sleep(3000); // Static wait just to see final UI & state
-		context.close();
-	}
-
-	  void openGmailInbox()
+	 private void openGmailInbox()
 	  {
 	     page.navigate("https://accounts.google.com/AccountChooser/signinchooser?service=mail");
 	     page.locator("[id=identifierId]").fill("bakshu.test@gmail.com");
@@ -107,7 +67,7 @@ public class Yamm_Gmail_Receiving_Tests {
 
 	  }
 	  
-	  void searchGmailInbox(String serachQuery) {
+	 private void searchGmailInbox(String serachQuery) {
 		  page.locator("input[placeholder='Search mail']").fill(serachQuery);
 		  page.locator("input[placeholder='Search mail']").press("Enter");
 	  }

@@ -13,19 +13,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
-public class Yamm_Email_Sending_Tests {
+public class Yamm_Email_Sending_Tests extends TestBase {
 
-	// Define required shared objects and testConfig as static 
-	// so that they can be initialized only once in beforeSuite()
-	// and they can be shared/used across all test classes/cases
-	static Playwright playwright;
-	static Browser browser;
-
-	// Define per test case objects as non static 
-	// so that they get a new instance for each test method
-	BrowserContext context;
-	Page page;
-	FrameLocator yammFrame;
 		
 	  @Test
 	  void test_Yamm_Email_Sending_To_Multiple_Receipients_Sent_Count_Message() {
@@ -67,38 +56,8 @@ public class Yamm_Email_Sending_Tests {
 			Assert.assertEquals(actualMsg, expectedMsg);
 	  }
 
-	@BeforeSuite
-	static void launchBrowser() {
-
-		// Setup Chrome browser using Playwright
-		playwright = Playwright.create();
-		browser = playwright.chromium().launch(
-												new BrowserType.LaunchOptions()
-													.setHeadless(false)
-													.setChannel("chrome"));
-	}
-
-	@AfterSuite
-	static void closeBrowser() {
-		playwright.close();
-	}
-
-	@BeforeMethod
-	void createContextAndPage() {
-
-		// Create a new browser context and a new page
-		context = browser.newContext();
-		page = context.newPage();
-
-	}
-
-	@AfterMethod
-	void closeContext() throws InterruptedException {
-		Thread.sleep(3000); // Static wait just to see final UI & state
-		context.close();
-	}
-
-	void openGoogleSheet(String fileName, String sheetName) {
+	
+	private void openGoogleSheet(String fileName, String sheetName) {
 		// Login & open Goolge Sheets Home
 		page.navigate("https://docs.google.com/spreadsheets/");
 		page.locator("#identifierId").fill("bakshu.test@gmail.com");
@@ -113,7 +72,7 @@ public class Yamm_Email_Sending_Tests {
 		});
 	}
 
-	void openYammApp() {
+	private void openYammApp() {
 		// Open YAMM dialog
 		page.locator("#docs-extensions-menu").click();
 		page.waitForSelector("text=Yet Another Mail Merge: Mail Merge for Gmail►");
@@ -125,7 +84,7 @@ public class Yamm_Email_Sending_Tests {
 		yammFrame = page.frameLocator("[src*=\"macros\"]").frameLocator("#sandboxFrame").frameLocator("#userHtmlFrame");
 	}
 	
-	void performYammAppActions()
+	private void performYammAppActions()
 	{
 		yammFrame.locator("#senderName_input").fill("Bakshu");
 		yammFrame.locator("#drafts_list").selectOption("r5543221579514015015");
