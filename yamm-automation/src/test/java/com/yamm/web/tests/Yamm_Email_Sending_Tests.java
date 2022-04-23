@@ -3,6 +3,8 @@ package com.yamm.web.tests;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.Locator.ClickOptions;
 import com.microsoft.playwright.options.*;
+import com.yamm.web.pages.YammAppDialog;
+
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import java.util.*;
 
@@ -20,12 +22,13 @@ public class Yamm_Email_Sending_Tests extends TestBase {
 	  void test_Yamm_Email_Sending_To_Multiple_Receipients_Sent_Count_Message() {
 	
 			openGoogleSheet("Discount Coupon Campaign", "Multiple_Receipients");
-			openYammApp();
-			performYammAppActions();
 			
-			String actualCount = yammFrame.locator("#mainPanel div:nth-child(1)").innerText();
+			yammFrame = openYammApp();
+			yammFrame.performSendActions("Bakshu", "r5543221579514015015");
+			
+			String actualCount = yammFrame.getSentCountMessage();
 			String expectedCount = "3 emails sent.";
-			yammFrame.locator("#mainPanel button:has-text('Close')").click();
+			yammFrame.close();
 			
 			Assert.assertEquals(actualCount, expectedCount);
 	  }
@@ -34,12 +37,13 @@ public class Yamm_Email_Sending_Tests extends TestBase {
 	  void test_Yamm_Email_Sending_To_Single_Receipient_Sent_Count_Message() {
 	
 			openGoogleSheet("Discount Coupon Campaign", "Single_Receipient");
-			openYammApp();
-			performYammAppActions();
 			
-			String actualCount = yammFrame.locator("#mainPanel div:nth-child(1)").innerText();
+			yammFrame = openYammApp();
+			yammFrame.performSendActions("Bakshu", "r5543221579514015015");
+			
+			String actualCount = yammFrame.getSentCountMessage();
 			String expectedCount = "1 emails sent.";
-			yammFrame.locator("#mainPanel button:has-text('Close')").click();
+			yammFrame.close();
 			
 			Assert.assertEquals(actualCount, expectedCount);
 	  }
@@ -48,9 +52,9 @@ public class Yamm_Email_Sending_Tests extends TestBase {
 	  void test_Yamm_Email_Sending_To_No_Receipient_Alert_Message() {
 	
 			openGoogleSheet("Discount Coupon Campaign", "No_Receipient");
-			openYammApp();
+			yammFrame = openYammApp();
 			
-			String actualMsg = yammFrame.locator("div.yamm__alert_message_container").innerText();
+			String actualMsg = yammFrame.getAlertMessage();
 			String expectedMsg = "There are no recipients in your sheet";
 			
 			Assert.assertEquals(actualMsg, expectedMsg);
@@ -72,7 +76,7 @@ public class Yamm_Email_Sending_Tests extends TestBase {
 		});
 	}
 
-	private void openYammApp() {
+	private YammAppDialog openYammApp() {
 		// Open YAMM dialog
 		page.locator("#docs-extensions-menu").click();
 		page.waitForSelector("text=Yet Another Mail Merge: Mail Merge for Gmail►");
@@ -81,15 +85,7 @@ public class Yamm_Email_Sending_Tests extends TestBase {
 		page.locator("text=Yet Another Mail Merge: Mail Merge for Gmail►").click(new ClickOptions().setDelay(2000));
 		page.locator("text=Start Mail Merge").click();
 		
-		yammFrame = page.frameLocator("[src*=\"macros\"]").frameLocator("#sandboxFrame").frameLocator("#userHtmlFrame");
+		return new YammAppDialog(page); 
 	}
 	
-	private void performYammAppActions()
-	{
-		yammFrame.locator("#senderName_input").fill("Bakshu");
-		yammFrame.locator("#drafts_list").selectOption("r5543221579514015015");
-		yammFrame.locator("#readReceiptCheckbox").uncheck();
-		yammFrame.locator("#sendButton").click();
-		yammFrame.locator("#mainPanel button:has-text('Close')").focus(); // Wait for the close button to appear	
-	}
 }

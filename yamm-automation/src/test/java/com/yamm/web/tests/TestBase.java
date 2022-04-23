@@ -3,6 +3,8 @@ package com.yamm.web.tests;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.Locator.ClickOptions;
 import com.microsoft.playwright.options.*;
+import com.yamm.web.pages.YammAppDialog;
+
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import java.util.*;
 
@@ -25,7 +27,7 @@ public class TestBase {
 	// so that they get a new instance for each test method
 	BrowserContext context;
 	Page page;
-	FrameLocator yammFrame;
+	YammAppDialog yammFrame;
 		
 	@BeforeSuite
 	static void launchBrowser() {
