@@ -18,6 +18,16 @@ I have added the users kengenouel, arturbektalarian and claudiu-talarian as coll
 
 I have created the automation project & overall folder structure for web testing and API testing. Please find the [Automation Framework Folder Structure Here](https://drive.google.com/file/d/1_8aB3qxNOQaVe0JQFXXcggvXUKGPaxXE/view).
 
+## Running a Test Class or Test Suite
+
+I have used the TestNG framework to implement the test classes and test suites. The IDE used is Eclipse IDE for Java Developers.
+
+We can easily run an individual test class or test suite. We just need to open the required test class or test suite and run it from the toolbar => run icon or right click context menu => run as option. Please refer to the below screenshots for different run options.
+
+* [How to run a TestNG Test Class?](https://drive.google.com/file/d/1-F1u2GpEO9K_RX4niPQJGKCr3o1Cc0kN/view)
+* [How to run a TestNG Test Suite?](https://drive.google.com/file/d/1XSPjIEyNz-2YY_DGukDK2sGawUNlU76M/view)
+
+
 ## Test Class - Yamm_Email_Sending_Tests
 
 This test class has below 3 tests. The test names are clear and self explanatory. Please find the required details for them below.
